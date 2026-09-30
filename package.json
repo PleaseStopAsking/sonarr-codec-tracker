@@ -1,0 +1,7 @@
+{
+  "name": "codec-tracker-assets",
+  "private": true,
+  "dependencies": {
+    "lucide": "0.468.0"
+  }
+}

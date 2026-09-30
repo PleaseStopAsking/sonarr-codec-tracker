@@ -1,7 +1,25 @@
 :4000 {
-	handle /api/* {
+	redir /favicon.ico /favicon.svg 308
+
+	@sonarrApi {
+		method GET
+		path /api/sonarr/series /api/sonarr/episodefile /api/sonarr/episode
+	}
+	handle @sonarrApi {
+		uri replace /api/sonarr/ /api/v3/
 		reverse_proxy {$SONARR_URL} {
 			header_up X-Api-Key {$SONARR_API_KEY}
+		}
+	}
+
+	@radarrApi {
+		method GET
+		path /api/radarr/movie /api/radarr/moviefile
+	}
+	handle @radarrApi {
+		uri replace /api/radarr/ /api/v3/
+		reverse_proxy {$RADARR_URL} {
+			header_up X-Api-Key {$RADARR_API_KEY}
 		}
 	}
 

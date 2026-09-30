@@ -1,16 +1,53 @@
 #!/bin/sh
 set -eu
 
-: "${SONARR_URL:?Set SONARR_URL to the Sonarr address reachable from this container}"
-: "${SONARR_API_KEY:?Set SONARR_API_KEY to your Sonarr API key}"
+SONARR_URL=${SONARR_URL:-}
+SONARR_API_KEY=${SONARR_API_KEY:-}
+RADARR_URL=${RADARR_URL:-}
+RADARR_API_KEY=${RADARR_API_KEY:-}
 
-case "$SONARR_URL" in
-    http://*|https://*) ;;
-    *) printf '%s\n' "SONARR_URL must start with http:// or https://" >&2; exit 1 ;;
-esac
+sonarr_enabled=false
+radarr_enabled=false
+configure_service() {
+    service=$1
+    if [ "$service" = SONARR ]; then
+        url=$SONARR_URL
+        key=$SONARR_API_KEY
+    else
+        url=$RADARR_URL
+        key=$RADARR_API_KEY
+    fi
 
-SONARR_URL=${SONARR_URL%/}
-escaped_sonarr_url=$(printf '%s' "$SONARR_URL" | sed 's/\\/\\\\/g; s/"/\\"/g')
-printf 'var SonarrUrl = "%s";\n' "$escaped_sonarr_url" > /usr/share/caddy/config.js
+    enabled=false
+    if [ -n "$url" ] && [ -n "$key" ]; then
+        case "$url" in
+            http://*|https://*) ;;
+            *) printf '%s\n' "${service}_URL must start with http:// or https://" >&2; exit 1 ;;
+        esac
+        url=${url%/}
+        enabled=true
+    else
+        if [ -n "$url" ] || [ -n "$key" ]; then
+            printf '%s\n' "$service is disabled: both ${service}_URL and ${service}_API_KEY are required" >&2
+        fi
+        url=http://127.0.0.1:1
+        key=
+    fi
+
+    if [ "$service" = SONARR ]; then
+        SONARR_URL=$url
+        SONARR_API_KEY=$key
+        sonarr_enabled=$enabled
+    else
+        RADARR_URL=$url
+        RADARR_API_KEY=$key
+        radarr_enabled=$enabled
+    fi
+}
+configure_service SONARR
+configure_service RADARR
+
+printf '{"sonarr":%s,"radarr":%s}\n' "$sonarr_enabled" "$radarr_enabled" > /usr/share/caddy/services.json
+export SONARR_URL SONARR_API_KEY RADARR_URL RADARR_API_KEY
 
 exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
