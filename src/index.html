@@ -72,7 +72,7 @@
                     $('tbody').html("")
                     // grab all the series
                     $.ajax({
-                        url: '/api/series',
+                        url: '/api/v3/series',
                         type: 'GET',
                         dataType: 'json', // add data type
                         success: function (data) {
@@ -103,7 +103,7 @@
                 function GetQuality(SeriesID, Title, TitleSlug) {
                     //Grab Episode Info
                     $.ajax({
-                        url: '/api/EpisodeFile?seriesId=' + SeriesID,
+                        url: '/api/v3/episodefile?seriesId=' + SeriesID,
                         type: 'GET',
                         dataType: 'json', // added data type
                         success: function (data) {
