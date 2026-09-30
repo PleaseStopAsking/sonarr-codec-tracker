@@ -1,0 +1,14 @@
+
+name: codec-tracker
+
+services:
+  caddy:
+    build: .
+    image: codec-tracker:local
+    container_name: codec-tracker
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      SONARR_URL: ${SONARR_URL}
+      SONARR_API_KEY: ${SONARR_API_KEY}

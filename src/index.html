@@ -10,13 +10,13 @@
         integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- ADDITIONAL STYLESHEET HERE -->
-    <title>sonarr-codec-tracker</title>
+    <title>codec-tracker</title>
 </head>
 
 <body>
     <!-- ALL OF YOUR SITE CODE HERE -->
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 py-2">
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0">sonarr-codec-tracker</a>
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0">codec-tracker</a>
         <!--input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"-->
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap text-white" style="cursor: pointer;">
@@ -58,7 +58,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.min.js"
         integrity="sha512-fHY2UiQlipUq0dEabSM4s+phmn+bcxSYzXP4vAXItBvBHU7zAM/mkhCZjtBEIJexhOMzZbgFlPLuErlJF2b+0g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>>
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.js"
         integrity="sha512-CTSrPIDxxtTdaIYlTKHEyvHa+70TOhC1pY3PLDgrUqCFifFtV7KrucZCvPy2K7hB0HtKgt0r4INTGBISqnaLNg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -72,7 +72,7 @@
                     $('tbody').html("")
                     // grab all the series
                     $.ajax({
-                        url: SonarrUrl + '/api/' + "series?apikey=" + SonarrKey + "",
+                        url: '/api/series',
                         type: 'GET',
                         dataType: 'json', // add data type
                         success: function (data) {
@@ -103,7 +103,7 @@
                 function GetQuality(SeriesID, Title, TitleSlug) {
                     //Grab Episode Info
                     $.ajax({
-                        url: SonarrUrl + '/api/' + "EpisodeFile?apikey=" + SonarrKey + "&seriesId=" + SeriesID,
+                        url: '/api/EpisodeFile?seriesId=' + SeriesID,
                         type: 'GET',
                         dataType: 'json', // added data type
                         success: function (data) {
@@ -121,7 +121,8 @@
                                     var Size = formatFileSize($(this)[0].size, 2)
                                     var MatchEpisodeID = parseInt(Episode.split("E")[1]);
                                     var MatchSeasonID = $(this)[0].seasonNumber;
-                                    $("tbody").append('<tr class="markeduptable" data-MatchEpisodeID="' + MatchEpisodeID + '" data-MatchSeasonID="' + MatchSeasonID + '" data-SeriesID="' + SeriesID + '"><td class="timestamp sortnr">' + UnixTime + '</td><td>' + RelativeTime + '</td><td><a href="' + SonarrUrl + '/series/' + TitleSlug + '" class="text-white font-weight-bold" target="_blank">' + Title + '</a></td><td>' + Episode + '</td><td class="qualityfilter">' + Quality + '</td><td>' + Resolution + '</td><td>' + Size + '</td></tr>')
+                                    var SonarrLink = SonarrUrl ? SonarrUrl.replace(/\/$/, '') + '/series/' + TitleSlug : '#';
+                                    $("tbody").append('<tr class="markeduptable" data-MatchEpisodeID="' + MatchEpisodeID + '" data-MatchSeasonID="' + MatchSeasonID + '" data-SeriesID="' + SeriesID + '"><td class="timestamp sortnr">' + UnixTime + '</td><td>' + RelativeTime + '</td><td><a href="' + SonarrLink + '" class="text-white font-weight-bold" target="_blank">' + Title + '</a></td><td>' + Episode + '</td><td class="qualityfilter">' + Quality + '</td><td>' + Resolution + '</td><td>' + Size + '</td></tr>')
                                     clearTimeout(Timeout_SortTable)
                                     clearTimeout(ColourTable_SortTable)
                                     Timeout_SortTable = setTimeout(SortTable, 800)

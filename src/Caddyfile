@@ -1,0 +1,12 @@
+:4000 {
+	handle /api/* {
+		reverse_proxy {$SONARR_URL} {
+			header_up X-Api-Key {$SONARR_API_KEY}
+		}
+	}
+
+	handle {
+		root * /usr/share/caddy
+		file_server
+	}
+}
